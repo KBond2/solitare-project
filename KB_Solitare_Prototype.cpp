@@ -1,4 +1,4 @@
-/*project goal: make game of solitare (subject to change if i actually get any friends)*/
+/*WIP of figuring out the basics of how to put together solitare, as of 03/17/2025 I have gotten to making a shuffled deck*/
 
 
 /*
@@ -53,7 +53,8 @@ int main()
     deck[51] = "gef";
     cout << sizeof(deck);
     */
-    
+
+    //Create unshuffled deck of 52 cards
     for (i = 1; i <= 13; i++)
     {
         for (j = 1; j <= 4; j++)
@@ -117,6 +118,9 @@ int main()
     //for (i = 0; i < 52; i++)
         //cout << blankDeck[i] << " ";
 
+
+    // Shuffle deck of 52 cards
+    
     for (deckNum = 0; deckNum < 52; deckNum++)
     {
         
