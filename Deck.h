@@ -28,10 +28,10 @@ public:
 };
 
 string suits[] = {
-    "DIAMONDS",
     "SPADES",
     "HEARTS",
-    "CLUBS"
+    "CLUBS",
+    "DIAMONDS"
 };
 
 string ranks[] = {
@@ -49,8 +49,6 @@ string ranks[] = {
     "QUEEN",
     "KING"
 };
-
-using namespace std;
 
 void buildDeck(Deck &deck) {
 // Builds a deck object with a sorted vector containing Cards with Suit, Rank, and Location information.
@@ -71,13 +69,15 @@ void shuffleDeck(Deck &deck) {
 // Assigns a new, unique, deck location value for each card in the current sorted deck.
 // Shuffle algoritithm taken from https://stackoverflow.com/questions/22850316/how-to-shuffle-elements-in-a-vector-randomly
     vector<Card> temp;
+    vector<int> shuffledNums;
     srand(time(NULL));
     
     temp = deck.sorted;
 
-    for (int k = 0; k < temp.size(); k++) {
-        int r = k + rand() % (temp.size() - k);
-        swap(temp[k], temp[r]);
+    for (Card currentCard : temp) {
+        int j = currentCard.deckLocation;
+        int r = j + (rand() % (temp.size() - j));
+        swap(temp[j].deckLocation, temp[r].deckLocation);
     }
 
     deck.shuffled = temp;
