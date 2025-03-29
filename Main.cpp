@@ -22,6 +22,26 @@ int main()
     for (Card currentCard : baseDeck.shuffled) {
         cout << "Suit: " << currentCard.suit << " Rank: " << currentCard.rank << " Location: " << currentCard.deckLocation << endl;
     }
+    
+    //KB - Fill lines
+    for (currentLineNum = 1; currentLineNum <= LINES; currentLineNum++)
+    {
+        for (currentCardNum = 0; currentCardNum < currentLineNum; currentCardNum++)
+        {
+            linesInPlay[currentLineNum-1].push_back(drawCard(baseDeck));
+        }
+    }
+    
+    //KB - Temp display of lines
+    for (currentLineNum = 1; currentLineNum <= LINES; currentLineNum++)
+    {
+        cout << "Line " << currentLineNum << ": ";
+        for (currentCardNum = 0; currentCardNum < currentLineNum; currentCardNum++)
+        {
+            cout << linesInPlay[currentLineNum-1].at(currentCardNum).rank << " OF " << linesInPlay[currentLineNum-1].at(currentCardNum).suit << " ";
+        }
+        cout << endl;
+    }
     /*
     string line1[DECK_SIZE];
     string line2[DECK_SIZE];
