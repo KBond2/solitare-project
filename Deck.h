@@ -82,3 +82,56 @@ void shuffleDeck(Deck &deck) {
 
     deck.shuffled = temp;
 }
+
+int cardsRemoved(Deck&);
+
+
+//KB - Returns a single card from the deck (the one at the highest location), and sets that card's location at -1 
+//to represent that card being 'removed' from the deck.
+Card drawCard(Deck &deck)
+{
+    int location = deck.shuffled.size() - cardsRemoved(deck) -1;
+    //cout << "DEBUG: Looking for card at location " << location << endl;
+    Card cardToDraw = {"BLANK","BLANK", -1};
+    bool noCardsFound = 1;
+    for (Card &currentCard : deck.shuffled)
+    {
+        if (currentCard.deckLocation == location)
+        {
+            //cout << "DEBUG: The current card is " << cardToDraw.rank << " of " << cardToDraw.suit << " which is at location ";
+            //cout << currentCard.deckLocation << ", which should be " << location << endl;
+            cardToDraw = currentCard;
+            //considering -1 as 'removed from deck'
+            currentCard.deckLocation = -1;
+            //if (currentCard.deckLocation == -1)
+                //cout << "DEBUG: " << currentCard.rank << " of " << currentCard.suit << " removed from Deck\n";
+            noCardsFound = 0;
+            break;
+            
+        }
+    }
+
+    if (noCardsFound)
+    {
+        cout << "TEMP NO CARDS FOUND CONDITION, IMPLEMENT SOMETHING LATER\n";
+    }
+
+    //cout << "DEBUG: Drawing card " << cardToDraw.rank << " of " << cardToDraw.suit << endl;
+    return cardToDraw;
+}
+
+//KB - Counts how many cards have been 'removed' (have a deck location of -1) from the deck
+int cardsRemoved(Deck &deck)
+{
+    int numRemovedCards = 0;
+    for (Card currentCard : deck.shuffled)
+    {
+        if (currentCard.deckLocation == -1)
+            {
+                numRemovedCards++;
+            }
+    }
+
+    //cout << "DEBUG: " << numRemovedCards << " cards removed from the deck\n";
+    return numRemovedCards;
+}
