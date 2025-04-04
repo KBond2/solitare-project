@@ -1,0 +1,10 @@
+    Deck  Waste   Spades Hearts Clubs Diamonds
+     16   [S4]      [SA]   [H4]   [C6]   [DK]
+    -------------------------------------------
+    Line 1 | [  ] [  ] [  ] [  ] [  ] [  ] [HK]
+    Line 2 | [  ] [  ] [  ] [  ] [  ] [S6]
+    Line 3 | [  ] [  ] [  ] [  ] [HQ] [SK]
+    Line 4 | [  ] [  ] [  ] [H7]
+    Line 5 | [  ] [  ] [C9]
+    Line 6 | [  ] [S3]
+    Line 7 | [CJ]
