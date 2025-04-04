@@ -1,1 +1,23 @@
-placeholder
+TO DO:
+- Give user ability to transfer cards (L/K)
+    - User selects card (since it has to be the last card in a pile, by pile?)
+    - Card gets moved from its original position to a new position of the user's choice
+    - Check if the location the user chooses is a valid position (ie, the card rank is one lower than the one before it, and the opposite suit color)
+- Give user the ability to draw new cards (L)
+    - User can draw one card from the stock (deck), and play it, if they are physically unable to play this card it goes to the waste
+- Display cards (S)
+    - Setup the board
+    - Figure out colors(?)
+        - https://stackoverflow.com/questions/4053837/colorizing-text-in-the-console-with-c
+- Create [Piles] object (L)
+    - Tableau
+    - Piles
+    - Waste
+    - Stock
+- Setup Board (L)
+    - Shuffle Deck
+    - Dealing appropriate cards to their piles ( card1 - 1, card2 and card8 - 2, etc.)
+    - Put remaining cards in the [Stock]
+ - Taking user input (K)
+    - Input Validation
+    - Figure out a reference schema
