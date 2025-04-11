@@ -2,7 +2,9 @@
 
 
 /*
-Cards are stored in string arrays, 3 digit string representing a random card ("s01"-"s13" represents spade ace up to king)
+Cards are objects with a suit, rank, and location. The location is an integer that represents the card's position in the deck.
+The deck is a vector of cards, with a sorted and shuffled deck. The sorted deck is a deck with cards in order of suit and rank.
+The shuffled deck is a deck with cards in random positions (deckLocation has been randomized) but still sorted by suit and rank.
 Every pile has a revealed variable, number up to which they are revealed for display.
 */
 
@@ -16,22 +18,19 @@ using namespace std;
 int main()
 {
     Deck baseDeck;
-    buildDeck(baseDeck);
-    shuffleDeck(baseDeck);
+    Board baseBoard;
+    baseDeck.buildDeck();
+    baseBoard = initializeBoardState(baseDeck);
 
-    for (Card currentCard : baseDeck.shuffled) {
-        cout << "Suit: " << currentCard.suit << " Rank: " << currentCard.rank << " Location: " << currentCard.deckLocation << endl;
+    //for (Card currentCard : baseDeck.shuffledDeck) {
+    //    cout << currentCard.suit << " " << currentCard.rank << endl;
+    //}
+
+    for (Group currentPile : baseBoard.PileSet) {
+        for (Card currentCard : currentPile.group) {
+            cout << currentCard.rank << " of " << currentCard.suit << "    ";
+        }
+    //    cout << currentPile.pile[1].suit << endl;
+        cout << endl;
     }
-    /*
-    string line1[DECK_SIZE];
-    string line2[DECK_SIZE];
-    string line3[DECK_SIZE];
-    string line4[DECK_SIZE];
-    string line5[DECK_SIZE];
-    string line6[DECK_SIZE];
-    string line7[DECK_SIZE];
-
-    string waste[DECK_SIZE];
-    string deck[DECK_SIZE];
-    */
 }
