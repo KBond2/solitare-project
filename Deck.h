@@ -20,11 +20,40 @@ class Card {
         }
 };
 
+class Group {
+public:
+    vector<Card> group;
+
+    void revealTopCard();
+    void removeXCards();
+    void addXCards();
+};
 
 class Deck {
 public:
-    vector<Card> sorted;
-    vector<Card> shuffled;
+    Group shuffledDeck;
+
+    void buildDeck();
+};
+
+
+
+struct Board {
+    Group PileSet[7];
+    Group Waste;
+    Group Tableau;
+    Group Stock;
+
+    Board() = default;
+
+    Board(Group pileArray[7], Group w, Group t, Group s) {
+        for (int r = 0; r < 7; r++) {
+            PileSet[r] = pileArray[r];
+        }
+        Waste = w;
+        Tableau = t;
+        Stock = s;
+    }
 };
 
 string suits[] = {
@@ -50,35 +79,49 @@ string ranks[] = {
     "KING"
 };
 
-void buildDeck(Deck &deck) {
-// Builds a deck object with a sorted vector containing Cards with Suit, Rank, and Location information.
+void Deck::buildDeck() {
+// Builds a deck object with 52 shuffled cards stored inside of it.
+    //Build the sorted deck.
     int locationTracker = 0;
 
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 13; j++) {
             Card newCard(suits[i], ranks[j], locationTracker);
 
-            deck.sorted.push_back(newCard);
+            shuffledDeck.group.push_back(newCard);
 
             locationTracker++;
         }
     }
+
+    //Shuffle the deck.
+    // Shuffle algoritithm taken from https://stackoverflow.com/questions/22850316/how-to-shuffle-elements-in-a-vector-randomly
+    for (int k = 0; k < shuffledDeck.group.size(); k++) {
+        int r = k + rand() % (shuffledDeck.group.size() - k);
+        swap(shuffledDeck.group[k], shuffledDeck.group[r]);
+    }
 }
 
-void shuffleDeck(Deck &deck) {
-// Assigns a new, unique, deck location value for each card in the current sorted deck.
-// Shuffle algoritithm taken from https://stackoverflow.com/questions/22850316/how-to-shuffle-elements-in-a-vector-randomly
-    vector<Card> temp;
-    vector<int> shuffledNums;
-    srand(time(NULL));
-    
-    temp = deck.sorted;
 
-    for (Card currentCard : temp) {
-        int j = currentCard.deckLocation;
-        int r = j + (rand() % (temp.size() - j));
-        swap(temp[j].deckLocation, temp[r].deckLocation);
+Board initializeBoardState(Deck &baseDeck) {
+    Group Pile1, Pile2, Pile3, Pile4, Pile5, Pile6, Pile7;
+    Group SetOfPiles[7] = { Pile1, Pile2, Pile3, Pile4, Pile5, Pile6, Pile7 };
+    Group Waste, Tableau, Stock;
+
+
+    //Fill out the starting piles with the top 28 cards from the starting deck and remove them from
+    //the deck.
+    for (int j = 0; j < 7; j++) {
+        for (int k = 0; k <= j; k++) {
+            SetOfPiles[j].group.push_back(baseDeck.shuffledDeck.group[0]);
+            baseDeck.shuffledDeck.group.erase(baseDeck.shuffledDeck.group.begin());
+        }
     }
 
-    deck.shuffled = temp;
+    //Take the remaining cards and put them into the stock.
+    Stock = baseDeck.shuffledDeck;    
+
+    Board Table = {SetOfPiles, Waste, Tableau, Stock};
+
+    return Table;
 }
