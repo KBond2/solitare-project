@@ -25,6 +25,8 @@ int main()
 
     //KB: Variables for how many cards on the main piles are currently concealed
     int concealedIndex[7] = {0,1,2,3,4,5,6};
+    int index;
+    int pileIndex = 0;
 
     //KB: Variables for gameplay
     bool gameOver = 0;
@@ -41,11 +43,17 @@ int main()
         //for (Card currentCard : baseDeck.shuffledDeck) {
         //    cout << currentCard.suit << " " << currentCard.rank << endl;
         //}
-
+        pileIndex = 0;
         for (Group currentPile : baseBoard.PileSet) {
+            index = 0;
             for (Card currentCard : currentPile.group) {
-                cout << currentCard.rank << " of " << currentCard.suit << "    ";
-            }
+                if (index < concealedIndex[pileIndex])
+                    cout << " [HIDDEN] ";
+                else
+                    cout << currentCard.rank << " of " << currentCard.suit << "    ";
+                index += 1;
+            } 
+            pileIndex += 1;
             //cout << currentPile.pile[1].suit << endl;
             cout << endl;
         }
@@ -55,15 +63,15 @@ int main()
         {
             currentCard = {"NULL","NULL",-1};
             cout << "Select a move:\n";
-            cout << "Move card from piles (p)\nMove card from waste (w)\nDraw card from stock (d)\nEnd game (END)";
+            cout << "Move card from piles (p)\nMove card from waste (w)\nDraw card from stock (d)\nEnd game (END)\n";
             //KB: TEMP, ADD INPUT VALIDATION LATER
             cin >> turnInput;
 
             //KB: Choose method of getting a card.
             if (turnInput == "p")
             {
-                //currentCard = takeCardPiles(baseBoard.PileSet, concealedIndex);
-                cout << "This is where taking a card from one of the main piles goes\n";
+                currentCard = takeCardPiles(baseBoard.PileSet, concealedIndex);
+                //cout << "This is where taking a card from one of the main piles goes\n";
             }
             else if (turnInput == "w")
             {
@@ -73,7 +81,7 @@ int main()
             else if (turnInput == "d")
             {
                 //    V -- fill in with function of choice -KB
-                //currentCard = drawCard()
+                //currentCard = drawCard();
                 cout << "This is where the card drawing function goes\n";
                 //NOTE: drawn card goes to waste functionality goes here? if drawn card cannot go anywhere it automatically
                 //goes to the waste.
@@ -98,15 +106,17 @@ int main()
         cout << "Move the card to: \n";
         cout << "Piles (p)\nTableu (t)\n";
 
+        //KB:Add display of board here as well?
+        
         cin >> turnInput;
         if (turnInput == "p")
         {
-            //addCardToPile(baseBoard.PileSet,currentCard)
-            cout << "This is where the chosen card will be added to one of the seven piles\n";
+            addCardToPile(baseBoard.PileSet,currentCard);
+            //cout << "This is where the chosen card will be added to one of the seven piles\n";
         }
         else if (turnInput == "t")
         {
-            //addCardToTableu(baseBoard.Tableau,currentCard)
+            //addCardToTableu(baseBoard.Tableau,currentCard);
             cout << "This is where the chosen card will be added to the tableau\n";
         }
         else
