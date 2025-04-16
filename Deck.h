@@ -24,9 +24,7 @@ class Group {
 public:
     vector<Card> group;
 
-    void revealTopCard();
-    void removeXCards();
-    void addXCards();
+    Card drawCard();
 };
 
 class Deck {
@@ -102,6 +100,10 @@ void Deck::buildDeck() {
         int r = k + rand() % (shuffledDeck.group.size() - k);
         swap(shuffledDeck.group[k], shuffledDeck.group[r]);
     }
+}
+
+Card Group::drawCard() {
+    return group[0];
 }
 
 
