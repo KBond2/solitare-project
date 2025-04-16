@@ -96,6 +96,8 @@ void Deck::buildDeck() {
 
     //Shuffle the deck.
     // Shuffle algoritithm taken from https://stackoverflow.com/questions/22850316/how-to-shuffle-elements-in-a-vector-randomly
+    srand(time(NULL));
+    
     for (int k = 0; k < shuffledDeck.group.size(); k++) {
         int r = k + rand() % (shuffledDeck.group.size() - k);
         swap(shuffledDeck.group[k], shuffledDeck.group[r]);
