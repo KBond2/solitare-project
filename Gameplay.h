@@ -54,8 +54,10 @@ Card takeCardPiles(Group piles[], int concealedIndex[])
 //KB: Puts the selected card onto one of the piles.
 void addCardToPile(Group piles[],Card& currentCard)
 {
+    cout << "DEBUG: function addCardToPile() triggered\n";
     Card previousCard = {"NULL","NULL",-1};
     int playerLineChoice;
+    bool validCardPlay = 0;
 
     //KB: Input
     cout << "choose line: ";
@@ -68,9 +70,7 @@ void addCardToPile(Group piles[],Card& currentCard)
     {
         if (rankNum(currentCard) == 13)
         {
-            piles[playerLineChoice].group.push_back(currentCard);
-            cout << "Played " << currentCard.rank << " of " << currentCard.suit << " on line " << playerLineChoice+1 << endl;
-            currentCard = {"NULL","NULL",-1};
+            validCardPlay = 1;
         }
         else
         {
@@ -92,10 +92,21 @@ void addCardToPile(Group piles[],Card& currentCard)
             {
                 cout << "Card cannot be played on line " << playerLineChoice+1 << endl;
             }
+            else
+            {
+                validCardPlay = 1;
+            }
         }
-        else if (currentCard.suit == suits[0] || currentCard.suit == suits[2])
+        else if (previousCard.suit == suits[0] || previousCard.suit == suits[2])
         {
-            cout << "Card cannot be played on line " << playerLineChoice+1 << endl;
+            if (currentCard.suit == suits[0] || currentCard.suit == suits[2])
+            {
+                cout << "Card cannot be played on line " << playerLineChoice+1 << endl;
+            }
+            else
+            {
+                validCardPlay = 1;
+            }
         }
 
         //KB: Comparing ranks (current card must be one rank lower than the previous one)
@@ -107,15 +118,21 @@ void addCardToPile(Group piles[],Card& currentCard)
         //chosen card for the next turn.
         else
         {
-            piles[playerLineChoice].group.push_back(currentCard);
-            cout << "Played " << currentCard.rank << " of " << currentCard.suit << " on line " << playerLineChoice+1 << endl;
-            currentCard = {"NULL","NULL",-1};
+            validCardPlay = 1;
         }
+    }
+
+    if (validCardPlay)
+    {
+        piles[playerLineChoice].group.push_back(currentCard);
+        cout << "Played " << currentCard.rank << " of " << currentCard.suit << " on line " << playerLineChoice+1 << endl;
+        currentCard = {"NULL","NULL",-1};
     }
 
 
     
 }
+
 void addCardToTableu(Group& tableau,Card& currentCard)
 {
     currentCard = {"NULL","NULL",-1};
