@@ -32,8 +32,9 @@ int main()
     bool gameOver = 0;
     string turnInput;
     Card currentCard = {"NULL","NULL",-1};
+    vector<Card> currentCardStack;
 
-
+    currentCardStack.push_back({"NULL", "NULL", -1});
 
 
     //KB: Gameplay loop
@@ -63,15 +64,20 @@ int main()
         {
             currentCard = {"NULL","NULL",-1};
             cout << "Select a move:\n";
-            cout << "Move card from piles (p)\nMove card from waste (w)\nDraw card from stock (d)\nEnd game (END)\n";
+            cout << "Move card from tableu (t)\nMove multiple cards from tableu (m)\nMove card from waste (w)\nDraw card from stock (d)\nEnd game (END)\n";
             //KB: TEMP, ADD INPUT VALIDATION LATER
             cin >> turnInput;
 
             //KB: Choose method of getting a card.
-            if (turnInput == "p")
+            if (turnInput == "t")
             {
                 currentCard = takeCardPiles(baseBoard.PileSet, concealedIndex);
                 //cout << "This is where taking a card from one of the main piles goes\n";
+            }
+            else if (turnInput == "m")
+            {
+                //KB: Get multiple cards from the tableu
+                takeCardStack(baseBoard.PileSet, concealedIndex, currentCardStack);
             }
             else if (turnInput == "w")
             {
@@ -95,26 +101,39 @@ int main()
             {
                 cout << "No action found corresponding to input.\n";
             }
+        //KB: If the user has no cards selected, repeats the first section of code.
+        } while (currentCard.suit == "NULL" && currentCardStack.at(0).suit == "NULL");
 
-        } while (currentCard.suit == "NULL");
 
         if (gameOver)
             break;
-        do
+
+
+        //KB: Place a stack of cards (Tableu only)
+        while (currentCardStack.at(0).suit != "NULL")
         {
+            cout << "You now have a stack starting with the " << currentCardStack.at(0).rank << " of " << currentCardStack.at(0).suit << endl;
+            addCardStack(baseBoard.PileSet, concealedIndex, currentCardStack);
+        }
+
+
+        //KB: Place singular card
+        while (currentCard.suit != "NULL")
+        {
+        
         cout << "You now have the " << currentCard.rank << " of " << currentCard.suit << endl;
         cout << "Move the card to: \n";
-        cout << "Piles (p)\nTableu (t)\n";
+        cout << "Tableu (t)\nFoundations (f)\n";
 
         //KB:Add display of board here as well?
         
         cin >> turnInput;
-        if (turnInput == "p")
+        if (turnInput == "t")
         {
             addCardToPile(baseBoard.PileSet,currentCard);
             //cout << "This is where the chosen card will be added to one of the seven piles\n";
         }
-        else if (turnInput == "t")
+        else if (turnInput == "f")
         {
             //addCardToTableu(baseBoard.Tableau,currentCard);
             cout << "This is where the chosen card will be added to the tableau\n";
@@ -123,7 +142,7 @@ int main()
         {
             cout << "No action found corresponding to input.";
         }
-        } while (currentCard.suit != "NULL");
+        }
 
     
     } while (!gameOver);
