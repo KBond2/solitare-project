@@ -104,6 +104,7 @@ void Deck::buildDeck() {
 
 Card Group::drawCard() {
     return group[0];
+    group.erase(group.begin());
 }
 
 
