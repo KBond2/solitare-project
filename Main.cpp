@@ -13,6 +13,7 @@ Every pile has a revealed variable, number up to which they are revealed for dis
 #include <cstdlib>
 #include "Deck.h"
 #include "Gameplay.h"
+#include "inputValidation.h"
 
 using namespace std;
 
@@ -29,10 +30,11 @@ int main()
     int pileIndex = 0;
 
     //KB: Variables for gameplay
-    bool gameOver = 0;
+    bool gameOver = 0, drawnCard;
     string turnInput;
     Card currentCard = {"NULL","NULL",-1};
     vector<Card> currentCardStack;
+    int playerMove;
 
     currentCardStack.push_back({"NULL", "NULL", -1});
 
@@ -44,6 +46,10 @@ int main()
         //for (Card currentCard : baseDeck.shuffledDeck) {
         //    cout << currentCard.suit << " " << currentCard.rank << endl;
         //}
+        cout << "Current cards in stock: " << baseBoard.Stock.group.size();
+        cout << "   Current cards on foundations: ";
+        cout << "KB NOTE: PUT PROPER DISPLAY HERE";
+        cout << endl;
         pileIndex = 0;
         for (Group currentPile : baseBoard.PileSet) {
             index = 0;
@@ -58,37 +64,44 @@ int main()
             //cout << currentPile.pile[1].suit << endl;
             cout << endl;
         }
+        cout << "Waste: ";
+        if (baseBoard.Waste.group.size() == 0)
+            cout << "[EMPTY]\n";
+        else
+            cout << baseBoard.Waste.group.back().rank << " of " << baseBoard.Waste.group.back().suit << endl;
 
 
         do
         {
+            playerMove = -1;
+            drawnCard = 0;
             currentCard = {"NULL","NULL",-1};
             cout << "Select a move:\n";
-            cout << "Move card from tableu (t)\nMove multiple cards from tableu (m)\nMove card from waste (w)\nDraw card from stock (d)\nEnd game (END)\n";
-            //KB: TEMP, ADD INPUT VALIDATION LATER
-            cin >> turnInput;
+            turnInput = beginTurnInput("Move card from tableu (t)\nMove multiple cards from tableu (m)\nMove card from waste (w)\nDraw card from stock (d)\nEnd game (END)\n");
 
             //KB: Choose method of getting a card.
             if (turnInput == "t")
             {
-                currentCard = takeCardPiles(baseBoard.PileSet, concealedIndex);
+                currentCard = takeCardPiles(baseBoard.PileSet, concealedIndex, playerMove);
                 //cout << "This is where taking a card from one of the main piles goes\n";
             }
             else if (turnInput == "m")
             {
                 //KB: Get multiple cards from the tableu
-                takeCardStack(baseBoard.PileSet, concealedIndex, currentCardStack);
+                takeCardStack(baseBoard.PileSet, concealedIndex, currentCardStack, playerMove);
             }
             else if (turnInput == "w")
             {
-                //currentCard = takeCardWaste(baseBoard.Waste);
-                cout << "This is where taking a card from the waste goes\n";
+                currentCard = takeCardWaste(baseBoard.Waste);
+                drawnCard = 1;
+                //cout << "This is where taking a card from the waste goes\n";
             }
             else if (turnInput == "d")
             {
                 //    V -- fill in with function of choice -KB
-                //currentCard = drawCard();
-                cout << "This is where the card drawing function goes\n";
+                currentCard = drawCard(baseBoard);
+                drawnCard = 1;
+                //cout << "This is where the card drawing function goes\n";
                 //NOTE: drawn card goes to waste functionality goes here? if drawn card cannot go anywhere it automatically
                 //goes to the waste.
             }
@@ -113,7 +126,7 @@ int main()
         while (currentCardStack.at(0).suit != "NULL")
         {
             cout << "You now have a stack starting with the " << currentCardStack.at(0).rank << " of " << currentCardStack.at(0).suit << endl;
-            addCardStack(baseBoard.PileSet, concealedIndex, currentCardStack);
+            addCardStack(baseBoard.PileSet, concealedIndex, currentCardStack,playerMove);
         }
 
 
@@ -122,21 +135,30 @@ int main()
         {
         
         cout << "You now have the " << currentCard.rank << " of " << currentCard.suit << endl;
-        cout << "Move the card to: \n";
-        cout << "Tableu (t)\nFoundations (f)\n";
+        //cout << "Move the card to: \n";
+        //cout << "Tableu (t)\nFoundations (f)\n";
+        //if (drawnCard)
+        //cout << "Waste(w)\n";
 
+        string turnInputMessage = "Move card to: \nTableau (t)\nFoundations (f)\n";
+        if (drawnCard)
+            turnInputMessage = turnInputMessage + "Waste (w)\n";
         //KB:Add display of board here as well?
         
-        cin >> turnInput;
+        turnInput = endTurnInput(turnInputMessage);
         if (turnInput == "t")
         {
-            addCardToPile(baseBoard.PileSet,currentCard);
+            addCardToPile(baseBoard.PileSet,concealedIndex,currentCard,playerMove);
             //cout << "This is where the chosen card will be added to one of the seven piles\n";
         }
         else if (turnInput == "f")
         {
-            //addCardToTableu(baseBoard.Tableau,currentCard);
-            cout << "This is where the chosen card will be added to the tableau\n";
+            addCardToFoundations(baseBoard.Tableau,currentCard);
+            //cout << "This is where the chosen card will be added to the tableau\n";
+        }
+        else if (turnInput == "w" && drawnCard)
+        {
+            addCardToWaste(baseBoard.Waste,currentCard);
         }
         else
         {
@@ -144,6 +166,13 @@ int main()
         }
         }
 
+    revealHiddenCards(baseBoard.PileSet,concealedIndex);
+
+    if (baseBoard.Tableau.group.size() == 52)
+    {
+        cout << "You've completed the game of solitare! Congratulations!\n\n";
+        gameOver = 1;
+    }
     
     } while (!gameOver);
     

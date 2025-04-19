@@ -1,33 +1,40 @@
 #include "Deck.h"
+#include "inputValidation.h"
 //KB: Get rank of card. Note: make function part of piles object?
 int rankNum(Card);
 //KB: Basic functions for gameplay
-Card takeCardPiles(Group[], int[]);
 
+Card takeCardPiles(Group[], int[], int&);
 Card takeCardWaste(Group&);
 // V -- this one is up to L
-Card drawCard();
-void takeCardStack(Group[],int[], vector<Card>&);
+Card drawCard(Board&);
+void takeCardStack(Group[],int[], vector<Card>&, int&);
 
-void addCardStack(Group[], int[], vector<Card>&);
-void addCardToPile(Group[],Card&);
-void addCardToTableu(Group&,Card&);
+void addCardStack(Group[], int[], vector<Card>&, int);
+void addCardToPile(Group[], int[], Card&, int);
+void addCardToFoundations(Group&,Card&);
+void addCardToWaste(Group&, Card&);
+
+void revealHiddenCards(Group[],int[]);
+void shuffleWaste(Board&);
 
 
 //KB: Selects the top card from one of the piles
 //NOTE: currently does not have multi card functionality, this will likely have to be implemented
 //through a different function.
 
-Card takeCardPiles(Group piles[], int concealedIndex[])
+//KB: Card retrieval functions
+    //KB: Take a single card from one of the tableau piles
+Card takeCardPiles(Group piles[], int concealedIndex[], int& playerMove)
 {
 
     int playerLineChoice;
     Card retrievedCard = {"NULL","NULL",-1};
     
     //KB: Input
-    cout << "choose line: ";
-    //TEMP, ADD INPUT VALIDATION LATER 
-    cin >> playerLineChoice;
+    //cout << "choose line: ";
+
+    playerLineChoice = specificRangeIntInput("Which line of the tableau to take a card from? \n",1,7);
     playerLineChoice -= 1;
 
     //KB: Makes sure the pile being chosen has cards
@@ -43,27 +50,69 @@ Card takeCardPiles(Group piles[], int concealedIndex[])
         cout << "Taking the " << retrievedCard.rank << " of " << retrievedCard.suit << " from line " << playerLineChoice+1 << endl; 
     }
     //KB: Reveals the card underneath the selected card if it is hidden.
-    if (piles[playerLineChoice].group.size() == concealedIndex[playerLineChoice] && concealedIndex[playerLineChoice] != 0)
-    {
-        concealedIndex[playerLineChoice] -= 1;
-        cout << "Revealed the " << piles[playerLineChoice].group.at(concealedIndex[playerLineChoice]).rank << " of ";
-        cout << piles[playerLineChoice].group.at(concealedIndex[playerLineChoice]).suit << endl;
-    }
 
+    playerMove = playerLineChoice;
     //Returns the selected card.
     return retrievedCard;
 }
+    //KB: Draw a single card from the stock.
+Card drawCard(Board& playBoard)
+{
+    Card currentCard = {"NULL","NULL",-1};
+    string playerInput;
 
+    if (playBoard.Stock.group.size() == 0)
+    {
+        cout << "No cards to draw.\n";
+        if (playBoard.Waste.group.size() != 0)
+        {
+            shuffleWaste(playBoard);
+            cout << "Shuffled the Waste into the Stock.\n";
+            //KB NOTE: wasn't able to get the drawCard function to work properly? The card wouldn't be removed from the
+            //stock so it would just draw the same card over and over. if u can get this fixed then I can just replace
+            //this code here v-
+            currentCard = playBoard.Stock.group.back();
+            playBoard.Stock.group.pop_back();
+        }
+        else
+        {
+            cout << "No cards left that can be drawn.\n";
+        }
+    }
+    else
+    {
+        currentCard = playBoard.Stock.group.back();
+        playBoard.Stock.group.pop_back();
+    }
+    if (currentCard.suit != "NULL")
+    {
+    cout << "Drew the " << currentCard.rank << " of " << currentCard.suit << endl;
+    }
 
-//KB: Takes a stack of cards from a chosen line.
-void takeCardStack(Group piles[], int concealedIndex[], vector<Card>& cardPile)
+    return currentCard;
+}
+    //KB: Take the card from the waste.
+Card takeCardWaste(Group& waste)
+{
+    Card currentCard = {"NULL","NULL",-1};
+    if (waste.group.size() == 0)
+        cout << "Cannot take card from Waste, Waste is empty.\n";
+    else
+    {
+        currentCard = waste.group.back();
+        cout << "Took " << currentCard.rank << " of " << currentCard.suit << " from Waste.\n";
+        waste.group.pop_back();
+    }
+    return currentCard;
+}
+    //KB: Takes a stack of cards from a chosen line.
+void takeCardStack(Group piles[], int concealedIndex[], vector<Card>& cardPile, int& playerMove)
 {
     int pileChoice;
     int pileDepthChoice;
     int i;
-    cout << "Which line of the tableu to take cards from: ";
-    //KB: NOTE: ADD INPUT VALIDATION LATER
-    cin >> pileChoice;
+    //cout << "Which line of the tableu to take cards from?: \n";
+    pileChoice = specificRangeIntInput("Which line of the Tableau to take cards from?\n",1,7);
     pileChoice -= 1;
     if (piles[pileChoice].group.size() - concealedIndex[pileChoice] <= 1)
     {
@@ -85,10 +134,9 @@ void takeCardStack(Group piles[], int concealedIndex[], vector<Card>& cardPile)
                 cout << "and " << piles[pileChoice].group.at(i).rank << " of " << piles[pileChoice].group.at(i).suit << endl;
             }
         }
-        cout << "Select the base of the pile to take: ";
-        //KB: NOTE: ADD INPUT VALIDATION (value must be non-negative int between 1 and 1 below the amount of cards in the pile)
-        //do not want user using this for single card ideally? unless i go and restructure the. entire code ig.
-        cin >> pileDepthChoice;
+        //cout << "Select the base of the pile to take: ";
+
+        pileDepthChoice = specificRangeIntInput("Select the base of the pile to take: \n",1, piles[pileChoice].group.size() - concealedIndex[pileChoice]);
         
         //i = pileDepthChoice + concealedIndex[pileChoice] - 1 ;
         //cout << "DEBUG: i value = " << i << endl;
@@ -106,7 +154,7 @@ void takeCardStack(Group piles[], int concealedIndex[], vector<Card>& cardPile)
         for (Card cardToAdd : piles[pileChoice].group)
         {
             i++;
-            if (i > concealedIndex[pileChoice])
+            if (i > concealedIndex[pileChoice] + pileDepthChoice - 1)
             {
                 cardPile.push_back(cardToAdd);
                 //cout << "DEBUG: Adding " << cardToAdd.rank << " of " << cardToAdd.suit << " to current stack.\n";
@@ -120,20 +168,47 @@ void takeCardStack(Group piles[], int concealedIndex[], vector<Card>& cardPile)
         }
         
     }
+    playerMove = pileChoice;
+
 }
 
-//KB: Puts the selected card onto one of the piles.
-void addCardToPile(Group piles[],Card& currentCard)
+
+//KB: Card placement Functions
+    //KB: Puts the selected card onto one of the piles.
+void addCardToPile(Group piles[],int concealedIndex[], Card& currentCard, int prevMove)
 {
     //cout << "DEBUG: function addCardToPile() triggered\n";
     Card previousCard = {"NULL","NULL",-1};
     int playerLineChoice;
     bool validCardPlay = 0;
+    string playerInput;
 
     //KB: Input
-    cout << "choose line: ";
-    //TEMP, ADD INPUT VALIDATION LATER 
-    cin >> playerLineChoice;
+    if (prevMove != -1)
+    {
+        //cout << "Select line to move card to, or [c] to cancel move:\n";
+        playerInput = lineOrCancel("Select line to move card to, or [c] to cancel move:\n");
+        if (playerInput != "c")
+        {
+            playerLineChoice = stoi(playerInput);
+        }
+    }
+    else
+    {
+        //cout << "Select line to move card to:\n";
+        playerLineChoice = specificRangeIntInput("Select line to move card to:\n",1,7);
+    }
+
+    if (playerInput == "c" && prevMove != -1)
+    {
+        validCardPlay = 1;
+        playerLineChoice = prevMove;
+    }
+    else
+    {
+
+    
+    
     playerLineChoice -= 1;
 
     //KB: If the pile has no cards, the only card that can be placed there is a king.
@@ -145,8 +220,16 @@ void addCardToPile(Group piles[],Card& currentCard)
         }
         else
         {
-            cout << "Card cannot be played on line " << playerLineChoice+1 << endl;
-            
+            cout << "Not a valid move.\n";
+        }
+    }
+    else if (piles[playerLineChoice].group.size() <= concealedIndex[playerLineChoice])
+    {
+        string inputMessage = "Return card to line " + to_string(playerLineChoice + 1) + "? (y/n)\n";
+        playerInput = yOrN(inputMessage);
+        if (playerInput == "y")
+        {
+            validCardPlay = 1;
         }
     }
     else
@@ -180,6 +263,7 @@ void addCardToPile(Group piles[],Card& currentCard)
 
         }
     }
+    }
 
     if (validCardPlay)
     {
@@ -191,8 +275,8 @@ void addCardToPile(Group piles[],Card& currentCard)
 
     
 }
-
-void addCardStack(Group tableau[],int concealedIndex[], vector<Card>& cardStack)
+    //KB: Puts a stack of cards onto one of the piles
+void addCardStack(Group tableau[],int concealedIndex[], vector<Card>& cardStack, int prevMove)
 {
     int playerLineChoice, i, k;
     Card currentCard = cardStack.at(0);
@@ -200,9 +284,20 @@ void addCardStack(Group tableau[],int concealedIndex[], vector<Card>& cardStack)
     bool validMove = 0;
     string playerInput;
 
-    //KB: ADD INPUT VALIDATION LATER
-    cout << "Select line to move stack to:\n";
-    cin >> playerLineChoice;
+    //cout << "Select line to move stack to, or [c] to cancel move.:\n";
+    playerInput = lineOrCancel("Select line to move stack to, or [c] to cancel move.:\n");
+
+    if (playerInput == "c")
+    {
+        validMove = 1;
+        playerLineChoice = prevMove;
+    }
+    else
+    {
+
+    
+    playerLineChoice = stoi(playerInput);
+
     playerLineChoice -= 1;
 
     if (tableau[playerLineChoice].group.size() == 0)
@@ -218,8 +313,8 @@ void addCardStack(Group tableau[],int concealedIndex[], vector<Card>& cardStack)
     }
     else if (tableau[playerLineChoice].group.size() <= concealedIndex[playerLineChoice])
     {
-        cout << "Cancel move? (y/n)\n";
-        cin >> playerInput;
+        string inputMessage = "Return card to line " + to_string(playerLineChoice + 1) + "? (y/n)\n";
+        playerInput = yOrN(inputMessage);
         if (playerInput == "y")
         {
             validMove = 1;
@@ -256,6 +351,7 @@ void addCardStack(Group tableau[],int concealedIndex[], vector<Card>& cardStack)
 
         }
     }
+    }
 
     if (validMove)
     {
@@ -266,28 +362,59 @@ void addCardStack(Group tableau[],int concealedIndex[], vector<Card>& cardStack)
             cardStack.erase(cardStack.begin());
         }
         cardStack.push_back({"NULL", "NULL", -1});
-        for (i = 0; i < 7; i++)
-        {
-            //cout << "DEBUG: tableau line " << i << " group size: " << tableau[i].group.size() << endl;
-            //cout << "DEBUG: concealiedIndex[" << i << "]: " << concealedIndex[i] << endl;
-            if (tableau[i].group.size() <= concealedIndex[i] && tableau[i].group.size() != 0)
-            {
-                cout << "Revealed the " << tableau[i].group.at(concealedIndex[i]-1).rank << " of " << tableau[i].group.at(concealedIndex[i]-1).suit;
-                cout << " on line " << i + 1 << endl;
-                concealedIndex[i] -= 1;
-                break;
-            }
-            
-        }
+        
     }
 }
-
-
-void addCardToFoundations(Group& tableau,Card& currentCard)
+    //KB: Puts the card onto the foundations
+void addCardToFoundations(Group& foundations,Card& currentCard)
 {
-    currentCard = {"NULL","NULL",-1};
+    int highestRank = 0;
+    if (foundations.group.size() == 0)
+    {
+        if (rankNum(currentCard) == 1)
+        {
+            cout << "Added " << currentCard.rank << " of " << currentCard.suit << " to the foundations.\n";
+            foundations.group.push_back(currentCard);
+            currentCard = {"NULL","NULL",-1};
+        }
+        else
+        {
+            cout << "Cannot play the current card to the foundations.\n";
+        }
+    }
+    else
+    {
+        for (int i = foundations.group.size() - 1; i >= 0; i--)
+        {
+            if (foundations.group.at(i).suit == currentCard.suit)
+            {
+                highestRank = rankNum(foundations.group.at(i));
+                break;
+            }
+        }
+        
+        if (rankNum(currentCard) == highestRank + 1)
+        {
+            cout << "Added " << currentCard.rank << " of " << currentCard.suit << " to the foundations.\n";
+            foundations.group.push_back(currentCard);
+            currentCard = {"NULL","NULL",-1};
+        }
+        else
+            cout << "Cannot play the current card to the foundations.";
+    }
+    
+}
+    //KB: Puts the card into the waste.
+void addCardToWaste(Group& waste, Card& currentCard)
+{
+    waste.group.push_back(currentCard);
+    cout << currentCard.rank << " of " << currentCard.suit << " moved to Waste.\n";
+    currentCard = {"NULL", "NULL", -1};
 }
 
+
+//KB: Misc functions
+    //KB: Get the rank of a card as an integer from 1 to 13
 int rankNum(Card rankCheck)
 {
     int rank;
@@ -298,4 +425,35 @@ int rankNum(Card rankCheck)
     }
     return rank;
 }
-
+    //KB: Check to see if any of the piles are under the concealedIndex, and lowers the concealed index if they are
+void revealHiddenCards(Group tableau[],int concealedIndex[])
+{
+    int i;
+    for (i = 0; i < 7; i++)
+    {
+        //cout << "DEBUG: tableau line " << i << " group size: " << tableau[i].group.size() << endl;
+        //cout << "DEBUG: concealiedIndex[" << i << "]: " << concealedIndex[i] << endl;
+        if (tableau[i].group.size() <= concealedIndex[i] && tableau[i].group.size() != 0)
+        {
+            cout << "Revealed the " << tableau[i].group.at(concealedIndex[i]-1).rank << " of " << tableau[i].group.at(concealedIndex[i]-1).suit;
+            cout << " on line " << i + 1 << endl;
+            concealedIndex[i] -= 1;
+            break;
+        }
+            
+    }
+}
+    //KB: Shuffle the waste into the stock.
+void shuffleWaste(Board& playBoard)
+{
+    for (int i = playBoard.Waste.group.size() - 1; i >= 0; i--)
+    {
+        playBoard.Stock.group.push_back(playBoard.Waste.group.at(i));
+        playBoard.Waste.group.pop_back();
+    }
+    //KB NOTE: Reused the code from L's deck building function for shuffling.
+    for (int k = 0; k < playBoard.Stock.group.size(); k++) {
+        int r = k + rand() % (playBoard.Stock.group.size() - k);
+        swap(playBoard.Stock.group[k], playBoard.Stock.group[r]);
+    }
+}
