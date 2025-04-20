@@ -1,4 +1,8 @@
+#pragma once
+
 #include <iostream>
+#include <string>
+
 using namespace std;
 
 //get t, m, w, d, or END. 
