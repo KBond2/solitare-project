@@ -1,3 +1,12 @@
+/*********************************************
+Kethry Bond, Liam Block, Steve Saelee
+Final Project - Header
+Date Completed: April 20
+Description: Contains the classes for Card, Group, and Board, as well as their functions & other basic values used for
+gameplay.
+Version: 1.0
+*********************************************/
+
 #pragma once
 
 

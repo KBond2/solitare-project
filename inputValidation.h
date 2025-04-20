@@ -1,3 +1,11 @@
+/*********************************************
+Kethry Bond, Liam Block, Steve Saelee
+Final Project - Header
+Date Completed: April 20
+Description: Contains the functions used to validate the user's input
+Version: 1.0
+*********************************************/
+
 #pragma once
 
 #include <iostream>

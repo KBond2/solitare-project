@@ -1,12 +1,20 @@
+/*********************************************
+Kethry Bond, Liam Block, Steve Saelee
+Final Project - Header
+Date Completed: April 20
+Description: Contains the functions used to integrate the actual gameplay of Solitare
+Version: 1.0
+*********************************************/
+
 #include "Deck.h"
 #include "inputValidation.h"
 //KB: Get rank of card. Note: make function part of piles object?
 int rankNum(Card);
 //KB: Basic functions for gameplay
 
+//Function Prototypes
 Card takeCardPiles(Group[], int[], int&);
 Card takeCardWaste(Group&);
-// V -- this one is up to L
 Card drawCard(Board&);
 void takeCardStack(Group[], int[], vector<Card>&, int&);
 
@@ -19,10 +27,6 @@ void revealHiddenCards(Group[], int[]);
 void shuffleWaste(Board&);
 
 
-//KB: Selects the top card from one of the piles
-//NOTE: currently does not have multi card functionality, this will likely have to be implemented
-//through a different function.
-
 //KB: Card retrieval functions
     //KB: Take a single card from one of the tableau piles
 Card takeCardPiles(Group piles[], int concealedIndex[], int& playerMove)
@@ -32,7 +36,6 @@ Card takeCardPiles(Group piles[], int concealedIndex[], int& playerMove)
     Card retrievedCard = { "NULL","NULL",-1 };
 
     //KB: Input
-    //cout << "choose line: ";
 
     playerLineChoice = specificRangeIntInput("Which line of the tableau to take a card from? \n", 1, 7);
     playerLineChoice -= 1;
@@ -68,9 +71,6 @@ Card drawCard(Board& playBoard)
         {
             shuffleWaste(playBoard);
             cout << "Shuffled the Waste into the Stock.\n";
-            //KB NOTE: wasn't able to get the drawCard function to work properly? The card wouldn't be removed from the
-            //stock so it would just draw the same card over and over. if u can get this fixed then I can just replace
-            //this code here v-
             currentCard = playBoard.Stock.group.back();
             playBoard.Stock.group.pop_back();
         }
@@ -111,7 +111,6 @@ void takeCardStack(Group piles[], int concealedIndex[], vector<Card>& cardPile, 
     int pileChoice;
     int pileDepthChoice;
     int i;
-    //cout << "Which line of the tableu to take cards from?: \n";
     pileChoice = specificRangeIntInput("Which line of the Tableau to take cards from?\n", 1, 7);
     pileChoice -= 1;
     if (piles[pileChoice].group.size() - concealedIndex[pileChoice] <= 1)
@@ -134,22 +133,9 @@ void takeCardStack(Group piles[], int concealedIndex[], vector<Card>& cardPile, 
                 cout << "and " << piles[pileChoice].group.at(i).rank << " of " << piles[pileChoice].group.at(i).suit << endl;
             }
         }
-        //cout << "Select the base of the pile to take: ";
 
         pileDepthChoice = specificRangeIntInput("Select the base of the pile to take: \n", 1, piles[pileChoice].group.size() - concealedIndex[pileChoice]);
 
-        //i = pileDepthChoice + concealedIndex[pileChoice] - 1 ;
-        //cout << "DEBUG: i value = " << i << endl;
-        //cout << "DEBUG: size of pile = " << piles[pileChoice].group.size() << endl;
-
-        //KB: i don't know why this function didn't work but the other one did.
-        /*for (i; i < piles[pileChoice].group.size(); i++);
-        {
-            cardPile.push_back(piles[pileChoice].group.at(i));
-            cout << "DEBUG: Adding " << piles[pileChoice].group.at(i).rank << " of " << piles[pileChoice].group.at(i).suit;
-            cout << "to current stack.\n";
-        }
-        */
         i = 0;
         for (Card cardToAdd : piles[pileChoice].group)
         {
@@ -186,7 +172,6 @@ void addCardToPile(Group piles[], int concealedIndex[], Card& currentCard, int p
     //KB: Input
     if (prevMove != -1)
     {
-        //cout << "Select line to move card to, or [c] to cancel move:\n";
         playerInput = lineOrCancel("Select line to move card to, or [c] to cancel move:\n");
         if (playerInput != "c")
         {
@@ -195,7 +180,6 @@ void addCardToPile(Group piles[], int concealedIndex[], Card& currentCard, int p
     }
     else
     {
-        //cout << "Select line to move card to:\n";
         playerLineChoice = specificRangeIntInput("Select line to move card to:\n", 1, 7);
     }
 
@@ -284,7 +268,6 @@ void addCardStack(Group tableau[], int concealedIndex[], vector<Card>& cardStack
     bool validMove = 0;
     string playerInput;
 
-    //cout << "Select line to move stack to, or [c] to cancel move.:\n";
     playerInput = lineOrCancel("Select line to move stack to, or [c] to cancel move.:\n");
 
     if (playerInput == "c")
