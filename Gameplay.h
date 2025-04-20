@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Deck.h"
 #include "inputValidation.h"
 //KB: Get rank of card. Note: make function part of piles object?
