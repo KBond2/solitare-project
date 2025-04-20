@@ -5,22 +5,8 @@
 
 using namespace std;
 
-//get t, m, w, d, or END. 
-string beginTurnInput();
-//get t, f, or w.
-string endTurnInput(string);
-//get bool yes or no answer
-string yOrN(string);
-
-
-//get int between first and second value
-int specificRangeIntInput(string, int, int);
-//get integer or c.
-string lineOrCancel(string);
-
-
-string beginTurnInput(string getInputMessage)
-{
+string beginTurnInput (string getInputMessage) {
+    //get t, m, w, d, or END. 
     bool isValidInput;
     string userInput;
     do
@@ -31,17 +17,17 @@ string beginTurnInput(string getInputMessage)
         if (userInput != "t" && userInput != "m" && userInput != "w" && userInput != "d" && userInput != "END")
         {
             isValidInput = 0;
-            cin.ignore(1000,'\n');
+            cin.ignore(1000, '\n');
         }
 
 
     } while (!isValidInput);
 
     return userInput;
-    
-}
-string endTurnInput(string getInputMessage)
-{
+};
+
+string endTurnInput (string getInputMessage) {
+    //get t, f, or w.
     bool isValidInput;
     string userInput;
     do
@@ -52,16 +38,17 @@ string endTurnInput(string getInputMessage)
         if (userInput != "t" && userInput != "f" && userInput != "w")
         {
             isValidInput = 0;
-            cin.ignore(1000,'\n');
+            cin.ignore(1000, '\n');
         }
 
 
     } while (!isValidInput);
 
     return userInput;
-}
-string yOrN(string getInputMessage)
-{
+};
+
+string yOrN (string getInputMessage) {
+    //get bool yes or no answer
     bool isValidInput;
     string userInput;
     do
@@ -72,19 +59,16 @@ string yOrN(string getInputMessage)
         if (userInput != "y" && userInput != "n")
         {
             isValidInput = 0;
-            cin.ignore(1000,'\n');
+            cin.ignore(1000, '\n');
         }
 
 
     } while (!isValidInput);
 
     return userInput;
-}
+};
 
-
-
-int specificRangeIntInput(string getInputMessage, int minVal, int maxVal)
-{
+int specificRangeIntInput (string getInputMessage, int minVal, int maxVal) {
     bool isValidInput;
     string userInput;
     int userNum;
@@ -119,18 +103,16 @@ int specificRangeIntInput(string getInputMessage, int minVal, int maxVal)
         }
         if (!isValidInput)
         {
-            cin.ignore(1000,'\n');
+            cin.ignore(1000, '\n');
         }
     } while (!isValidInput);
 
     return userNum;
-}
+};
 
-string lineOrCancel(string getInputMessage)
-{
+string lineOrCancel (string getInputMessage) {
     bool isValidInput;
     string userInput;
-    int userNum;
     do
     {
         isValidInput = 1;
@@ -168,9 +150,9 @@ string lineOrCancel(string getInputMessage)
         }
         if (!isValidInput)
         {
-            cin.ignore(1000,'\n');
+            cin.ignore(1000, '\n');
         }
     } while (!isValidInput);
 
     return userInput;
-}
+};

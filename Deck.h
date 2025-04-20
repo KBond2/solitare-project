@@ -8,16 +8,18 @@
 using namespace std;
 
 class Card {
-    public:
-        string suit;
-        string rank;
-        int deckLocation;
+public:
+    string suit;
+    string rank;
+    int deckLocation = -1;
 
-        Card(string x, string y, int num) {
-            suit = x;
-            rank = y;
-            deckLocation = num;
-        }
+    Card() = default;
+
+    Card(string x, string y, int num) {
+        suit = x;
+        rank = y;
+        deckLocation = num;
+    }
 };
 
 class Group {
@@ -37,19 +39,19 @@ public:
 
 
 struct Board {
-    Group PileSet[7];
+    Group Tableau[7];
     Group Waste;
-    Group Tableau;
+    Group Foundation;
     Group Stock;
 
     Board() = default;
 
     Board(Group pileArray[7], Group w, Group t, Group s) {
         for (int r = 0; r < 7; r++) {
-            PileSet[r] = pileArray[r];
+            Tableau[r] = pileArray[r];
         }
         Waste = w;
-        Tableau = t;
+        Foundation = t;
         Stock = s;
     }
 };
@@ -78,8 +80,8 @@ string ranks[] = {
 };
 
 void Deck::buildDeck() {
-// Builds a deck object with 52 shuffled cards stored inside of it.
-    //Build the sorted deck.
+    // Builds a deck object with 52 shuffled cards stored inside of it.
+        //Build the sorted deck.
     int locationTracker = 0;
 
     for (int i = 0; i < 4; i++) {
@@ -95,7 +97,7 @@ void Deck::buildDeck() {
     //Shuffle the deck.
     // Shuffle algoritithm taken from https://stackoverflow.com/questions/22850316/how-to-shuffle-elements-in-a-vector-randomly
     srand(time(NULL));
-    
+
     for (int k = 0; k < shuffledDeck.group.size(); k++) {
         int r = k + rand() % (shuffledDeck.group.size() - k);
         swap(shuffledDeck.group[k], shuffledDeck.group[r]);
@@ -107,15 +109,15 @@ Card Group::drawCard() {
 
     temp = group[0];
     group.erase(group.begin());
-    
+
     return temp;
 }
 
 
-Board initializeBoardState(Deck &baseDeck) {
+Board initializeBoardState(Deck& baseDeck) {
     Group Pile1, Pile2, Pile3, Pile4, Pile5, Pile6, Pile7;
     Group SetOfPiles[7] = { Pile1, Pile2, Pile3, Pile4, Pile5, Pile6, Pile7 };
-    Group Waste, Tableau, Stock;
+    Group Waste, Foundation, Stock;
 
 
     //Fill out the starting piles with the top 28 cards from the starting deck and remove them from
@@ -128,9 +130,9 @@ Board initializeBoardState(Deck &baseDeck) {
     }
 
     //Take the remaining cards and put them into the stock.
-    Stock = baseDeck.shuffledDeck;    
+    Stock = baseDeck.shuffledDeck;
 
-    Board Table = {SetOfPiles, Waste, Tableau, Stock};
+    Board Table = { SetOfPiles, Waste, Foundation, Stock };
 
     return Table;
 }
