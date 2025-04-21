@@ -172,11 +172,11 @@ int main()
 
     //KB: Win condition
     if (baseBoard.Foundation.group.size() == 52)
-    {
-        cout << "You've completed the game of solitare! Congratulations!\n\n";
         gameOver = 1;
-    }
-    system("cls");
+
+    Clear();
     } while (!gameOver);
-    
+
+    if (gameOver && turnInput != "END")
+        cout << "Congratulations! You've won!";
 }
