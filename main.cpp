@@ -57,8 +57,10 @@ int main()
              }
          }
         // Piles labeled for faster user selection.
-        cout << "\n   P1:" << setw(18) << "P2:" << setw(18) << "P3:" << setw(18) << "P4:" << setw(18) << "P5:"
-        << setw(18) << "P6:" << setw(18) << "P7:";
+        cout << "\n";
+        for (int i = 0; i < 7; i++) {
+            cout << left << setw(18) << "   P" + to_string(i + 1) + ":";
+        }
         cout << "\n";
          
         // Print each row of cards vertically
