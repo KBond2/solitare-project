@@ -178,6 +178,6 @@ int main()
     } while (!gameOver);
     
 
-    if (gameOver)
+    if (gameOver && turnInput != "END")
         cout << "Congratulations! You've won!";
 }
