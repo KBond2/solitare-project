@@ -174,7 +174,7 @@ int main()
             cout << "You've completed the game of solitare! Congratulations!\n\n";
             gameOver = 1;
         }
-    //system("cls");
+    Clear();
     } while (!gameOver);
     
 
